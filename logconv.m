@@ -38,7 +38,7 @@ ImportPX4LogData();
  %Translate min and max plot times to indices
  time=double(sysvector.TIME_StartTime) .*fconv_timestamp;
 
-mintime_log=time(2);        %The minimum time/timestamp found in the log
+ mintime_log=time(2);        %The minimum time/timestamp found in the log
  maxtime_log=time(end);      %The maximum time/timestamp found in the log
  CurTime=mintime_log;        %The current time at which to draw the aircraft position
  
@@ -283,10 +283,10 @@ function DrawRawData()
     plot(h.axes(6),time(imintime:imaxtime), [sysvector.ATT_Roll(imintime:imaxtime), sysvector.ATT_Pitch(imintime:imaxtime), sysvector.ATT_Yaw(imintime:imaxtime)] .*180./3.14159);
     title(h.axes(6),'Estimated attitude [deg]');
     legend(h.axes(6),'roll','pitch','yaw');
-    %Actuator Controls
-    plot(h.axes(7),time(imintime:imaxtime), [sysvector.ATTC_Roll(imintime:imaxtime), sysvector.ATTC_Pitch(imintime:imaxtime), sysvector.ATTC_Yaw(imintime:imaxtime), sysvector.ATTC_Thrust(imintime:imaxtime)]);
-    title(h.axes(7),'Actuator control [-]');
-    legend(h.axes(7),'ATT CTRL Roll [-1..+1]','ATT CTRL Pitch [-1..+1]','ATT CTRL Yaw [-1..+1]','ATT CTRL Thrust [0..+1]');
+    %Actuator Controls //Modified with actuator control group 0 (7channels)
+    plot(h.axes(7),time(imintime:imaxtime), [sysvector.ATTC_Ch0(imintime:imaxtime), sysvector.ATTC_Ch1(imintime:imaxtime), sysvector.ATTC_Ch2(imintime:imaxtime), sysvector.ATTC_Ch3(imintime:imaxtime), sysvector.ATTC_Ch4(imintime:imaxtime), sysvector.ATTC_Ch5(imintime:imaxtime),sysvector.ATTC_Ch6(imintime:imaxtime),sysvector.ATTC_Ch7(imintime:imaxtime)]);
+    title(h.axes(7),'Actuator control group 0 [-]');
+    legend(h.axes(7),'Ch0 [-1..+1]','Ch1 [-1..+1]','Ch2 [-1..+1]','Ch3 [-1..+1]', 'Ch4 [-1..+1]','Ch5 [-1..+1]','Ch6 [-1..+1]','Ch7 [-1..+1]');
     %Actuator Controls
     plot(h.axes(8),time(imintime:imaxtime), [sysvector.OUT0_Out0(imintime:imaxtime), sysvector.OUT0_Out1(imintime:imaxtime), sysvector.OUT0_Out2(imintime:imaxtime), sysvector.OUT0_Out3(imintime:imaxtime), sysvector.OUT0_Out4(imintime:imaxtime), sysvector.OUT0_Out5(imintime:imaxtime), sysvector.OUT0_Out6(imintime:imaxtime), sysvector.OUT0_Out7(imintime:imaxtime)]);
     title(h.axes(8),'Actuator PWM (raw-)outputs [µs]');
@@ -305,7 +305,13 @@ function DrawRawData()
     for k = imintime+1:imaxtime
         intervals(k) = time(k) - time(k-1);
     end
-    plot(h.axes(10), time(imintime:imaxtime), intervals);
+%     t1=imintime
+%     t2=imaxtime
+%  
+%     t3=size(intervals)
+%     t4=size(time(imintime:imaxtime)) 
+    
+    plot(h.axes(10), time(imintime:imaxtime), intervals(imintime:imaxtime));
 
     %Set same timescale for all plots
     for i=2:NrAxes
@@ -341,12 +347,19 @@ function DrawCurrentAircraftState()
     acstate{6,:}=[sprintf('%s \t','Est. attitude[deg]:'),'[Roll=',num2str(sysvector.ATT_Roll(i).*180./3.14159),...
                                ', Pitch=',num2str(sysvector.ATT_Pitch(i).*180./3.14159),...
                                ', Yaw=',num2str(sysvector.ATT_Yaw(i).*180./3.14159),']'];
-    acstate{7,:}=sprintf('%s \t[','Actuator Ctrls [-]:');
-    %for j=1:4
-    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Roll(i)),','];
-    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Pitch(i)),','];
-    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Yaw(i)),','];
-    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Thrust(i)),','];
+    acstate{7,:}=sprintf('%s \t[','Actuator control group 0 [-]:');
+    %for j=1:8
+    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch0(i)),','];
+    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch1(i)),','];
+    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch2(i)),','];
+    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch3(i)),','];
+    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch4(i)),','];
+    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch5(i)),','];
+    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch6(i)),','];
+    acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch7(i)),','];
+%     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Pitch(i)),','];
+%     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Yaw(i)),','];
+%     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Thrust(i)),','];
     %end
     acstate{7,:}=[acstate{7,:},']'];
     acstate{8,:}=sprintf('%s \t[','Actuator Outputs [PWM/µs]:');
