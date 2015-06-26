@@ -47,8 +47,8 @@ ImportPX4LogData();
 % ************************************************************************
 % PLOT & GUI SETUP
 % ************************************************************************
-NrFigures=8;
-NrAxes=14;
+NrFigures=9;
+NrAxes=15;
 h.figures(1:NrFigures)=0.0;  % Temporary initialization of figure handle array - these are numbered consecutively
 h.axes(1:NrAxes)=0.0;        % Temporary initialization of axes handle array - these are numbered consecutively
 h.pathpoints=[];             % Temporary initiliazation of path points
@@ -233,13 +233,16 @@ function InitPlotGUI()
     h.axes(12)=subplot(2,1,2);
     set(h.axes(11:12),'Parent',h.figures(7));
     
-    % PLOT WINDOW 6: Manual input & current fly mode (0:mc, 1:fw) 
+    % PLOT WINDOW 7: Manual input & current fly mode (0:mc, 1:fw) 
     h.figures(8)=figure('Name', 'Manual input & current fly mode');
     h.axes(13)=subplot(2,1,1);
     h.axes(14)=subplot(2,1,2);
     set(h.axes(13:14),'Parent',h.figures(8));
    
-    
+    % PLOT WINDOW 8: Attitude transformed based on current fly mode 
+    h.figures(9)=figure('Name', 'Transformed attitude based on current fly mode');
+    h.axes(15)=subplot(1,1,1);
+    set(h.axes(15:15),'Parent',h.figures(9));
     
     
 end
@@ -391,6 +394,17 @@ function DrawRawData()
     title(h.axes(14),'Fly mode, 0: VTOL, 1: fixed-wing');
     
     
+    % ************************************************************************
+    %  PLOT WINDOW 8: Attitude data transformed based fly mode
+    % ************************************************************************
+    plot(h.axes(15),time(imintime:imaxtime), [sysvector.VTAT_Roll(imintime:imaxtime), sysvector.VTAT_Pitch(imintime:imaxtime), sysvector.VTAT_Yaw(imintime:imaxtime)] .*180./3.14159);
+%     plot(h.axes(15),time(imintime:imaxtime), [sysvector.MAN_x(imintime:imaxtime), sysvector.MAN_y(imintime:imaxtime),sysvector.MAN_z(imintime:imaxtime),sysvector.MAN_r(imintime:imaxtime),sysvector.MAN_aux1(imintime:imaxtime),sysvector.MAN_aux2(imintime:imaxtime),sysvector.MAN_aux3(imintime:imaxtime)]);
+    title(h.axes(15),'Transformed attitude based on fly mode (unit:deg)');
+    legend(h.axes(15),'Roll','Pitch','Yaw');    
+    
+    
+    
+    
     %Set same timescale for all plots
     for i=2:NrAxes
         set(h.axes(i),'XLim',[mintime maxtime]);
@@ -500,6 +514,12 @@ function DrawCurrentAircraftState()
     acstate{13,:}=sprintf('%s \t[','Current fly mode [-]: ');
     acstate{13,:}=[acstate{13,:},num2str(sysvector.FLYM_mode(i)),','];
     acstate{13,:}=[acstate{13,:},']'];
+    
+    acstate{14,:}=sprintf('%s \t[','Current transformed attitude based on fly mode');
+    acstate{14,:}=[acstate{14,:},num2str(sysvector.VTAT_Roll(i)),','];
+    acstate{14,:}=[acstate{14,:},num2str(sysvector.VTAT_Pitch(i)),','];
+    acstate{14,:}=[acstate{14,:},num2str(sysvector.VTAT_Yaw(i)),','];
+    acstate{14,:}=[acstate{14,:},']'];
     
     
     set(h.edits.AircraftState,'String',acstate);
