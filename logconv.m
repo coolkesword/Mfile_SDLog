@@ -47,7 +47,7 @@ ImportPX4LogData();
 % ************************************************************************
 % PLOT & GUI SETUP
 % ************************************************************************
-NrFigures=5;
+NrFigures=8;
 NrAxes=14;
 h.figures(1:NrFigures)=0.0;  % Temporary initialization of figure handle array - these are numbered consecutively
 h.axes(1:NrAxes)=0.0;        % Temporary initialization of axes handle array - these are numbered consecutively
