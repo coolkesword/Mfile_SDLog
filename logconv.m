@@ -48,7 +48,7 @@ ImportPX4LogData();
 % PLOT & GUI SETUP
 % ************************************************************************
 NrFigures=5;
-NrAxes=10;
+NrAxes=13;
 h.figures(1:NrFigures)=0.0;  % Temporary initialization of figure handle array - these are numbered consecutively
 h.axes(1:NrAxes)=0.0;        % Temporary initialization of axes handle array - these are numbered consecutively
 h.pathpoints=[];             % Temporary initiliazation of path points
@@ -223,6 +223,22 @@ function InitPlotGUI()
     h.axes(10)=subplot(1,1,1);
     set(h.axes(10:10),'Parent',h.figures(5));
     
+    % PLOT WINDOW 5: Actuator control group 1, manual input and actutor
+    % output group 1
+    h.figures(6)=figure('Name', 'Actuator control group 1/ Manual input / Actuator output group 1');
+    h.axes(11)=subplot(3,1,1);
+    h.axes(12)=subplot(3,1,2);
+    h.axes(13)=subplot(3,1,3);
+    set(h.axes(11:13),'Parent',h.figures(6));
+    
+    
+    
+    
+    % PLOT WINDOW 6: Fly mode, 0:mc, 1:fw
+    
+    
+    
+    
 end
 
 %% ************************************************************************
@@ -300,6 +316,12 @@ function DrawRawData()
     %add GPS total airspeed here
     title(h.axes(9),'Airspeed [m/s]');
     legend(h.axes(9),'Indicated Airspeed (IAS)','True Airspeed (TAS)','GPS Airspeed');
+    
+    % ************************************************************************
+    %  PLOT WINDOW 4: log stastics
+    % ************************************************************************
+    
+    figure(h.figures(5));
     %calculate time differences and plot them
     intervals = zeros(0,imaxtime - imintime);
     for k = imintime+1:imaxtime
@@ -310,9 +332,30 @@ function DrawRawData()
 %  
 %     t3=size(intervals)
 %     t4=size(time(imintime:imaxtime)) 
-    
+     
     plot(h.axes(10), time(imintime:imaxtime), intervals(imintime:imaxtime));
 
+    % ************************************************************************
+    %  PLOT WINDOW 5: Actuator control group 1, manual input and actuator output group 1
+    % ************************************************************************
+    
+    figure(h.figures(6));
+    %Actuator control group 1
+    plot(h.axes(11),time(imintime:imaxtime), [sysvector.ACT1_Ch0(imintime:imaxtime), sysvector.ACT1_Ch1(imintime:imaxtime),sysvector.ACT1_Ch2(imintime:imaxtime),sysvector.ACT1_Ch3(imintime:imaxtime),sysvector.ACT1_Ch4(imintime:imaxtime),sysvector.ACT1_Ch5(imintime:imaxtime),sysvector.ACT1_Ch6(imintime:imaxtime),sysvector.ACT1_Ch7(imintime:imaxtime)]);
+    title(h.axes(11),'Actuator control group 1');
+    legend(h.axes(11),'Ch0','Ch1','Ch2','Ch3','Ch4','Ch5','Ch6','Ch7');
+    
+    %Manual input: x,y,z,r,aux1,aux2,aux3
+    plot(h.axes(12),time(imintime:imaxtime), [sysvector.MAN_x(imintime:imaxtime), sysvector.MAN_y(imintime:imaxtime),sysvector.MAN_z(imintime:imaxtime),sysvector.MAN_r(imintime:imaxtime),sysvector.MAN_aux1(imintime:imaxtime),sysvector.MAN_aux2(imintime:imaxtime),sysvector.MAN_aux3(imintime:imaxtime)]);
+    title(h.axes(12),'Manual input from transmitter');
+    legend(h.axes(12),'x','y','z','r','aux1','aux2','aux3');
+    
+    %Actuator output group 1
+    plot(h.axes(13),time(imintime:imaxtime), [sysvector.OUT1_Out0(imintime:imaxtime), sysvector.OUT1_Out1(imintime:imaxtime),sysvector.OUT1_Out2(imintime:imaxtime),sysvector.OUT1_Out3(imintime:imaxtime),sysvector.OUT1_Out4(imintime:imaxtime),sysvector.OUT1_Out5(imintime:imaxtime),sysvector.OUT1_Out6(imintime:imaxtime),sysvector.OUT1_Out7(imintime:imaxtime)]);
+    title(h.axes(13),'Actuator output group 1 (PWM value)');
+    legend(h.axes(13),'Ch0','Ch1','Ch2','Ch3','Ch4','Ch5','Ch6','Ch7');
+    
+    
     %Set same timescale for all plots
     for i=2:NrAxes
         set(h.axes(i),'XLim',[mintime maxtime]);
