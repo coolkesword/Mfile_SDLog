@@ -48,7 +48,7 @@ ImportPX4LogData();
 % PLOT & GUI SETUP
 % ************************************************************************
 NrFigures=5;
-NrAxes=13;
+NrAxes=14;
 h.figures(1:NrFigures)=0.0;  % Temporary initialization of figure handle array - these are numbered consecutively
 h.axes(1:NrAxes)=0.0;        % Temporary initialization of axes handle array - these are numbered consecutively
 h.pathpoints=[];             % Temporary initiliazation of path points
@@ -210,32 +210,35 @@ function InitPlotGUI()
     h.axes(5)=subplot(4,1,4);
     set(h.axes(2:5),'Parent',h.figures(3));
     
-    %  PLOT WINDOW 3: ATTITUDE ESTIMATE, ACTUATORS/CONTROLS, AIRSPEEDS,...
-    h.figures(4)=figure('Name', 'Attitude Estimate / Actuators / Airspeeds');
-    h.axes(6)=subplot(4,1,1);
-    h.axes(7)=subplot(4,1,2);
-    h.axes(8)=subplot(4,1,3);
-    h.axes(9)=subplot(4,1,4);
-    set(h.axes(6:9),'Parent',h.figures(4));
+    %  PLOT WINDOW 3: ATTITUDE ESTIMATE, AIRSPEEDS,...
+    h.figures(4)=figure('Name', 'Attitude Estimate/ Airspeeds');
+    h.axes(6)=subplot(2,1,1);
+    h.axes(7)=subplot(2,1,2);
+    set(h.axes(6:7),'Parent',h.figures(4));
     
     %  PLOT WINDOW 4: LOG STATS
     h.figures(5) = figure('Name', 'Log Statistics');
-    h.axes(10)=subplot(1,1,1);
-    set(h.axes(10:10),'Parent',h.figures(5));
+    h.axes(8)=subplot(1,1,1);
+    set(h.axes(8),'Parent',h.figures(5));
     
-    % PLOT WINDOW 5: Actuator control group 1, manual input and actutor
-    % output group 1
-    h.figures(6)=figure('Name', 'Actuator control group 1/ Manual input / Actuator output group 1');
-    h.axes(11)=subplot(3,1,1);
-    h.axes(12)=subplot(3,1,2);
-    h.axes(13)=subplot(3,1,3);
-    set(h.axes(11:13),'Parent',h.figures(6));
+    % PLOT WINDOW 5: Actuator control group 0 & 1
+    h.figures(6)=figure('Name', 'Actuator control group 0 & 1');
+    h.axes(9)=subplot(2,1,1);
+    h.axes(10)=subplot(2,1,2);
+    set(h.axes(9:10),'Parent',h.figures(6));
     
+    % PLOT WINDOW 6: Actuator output group 0 & 1 
+    h.figures(7)=figure('Name', 'Actuator output group 0 & 1 PWM(us)');
+    h.axes(11)=subplot(2,1,1);
+    h.axes(12)=subplot(2,1,2);
+    set(h.axes(11:12),'Parent',h.figures(7));
     
-    
-    
-    % PLOT WINDOW 6: Fly mode, 0:mc, 1:fw
-    
+    % PLOT WINDOW 6: Manual input & current fly mode (0:mc, 1:fw) 
+    h.figures(8)=figure('Name', 'Manual input & current fly mode');
+    h.axes(13)=subplot(2,1,1);
+    h.axes(14)=subplot(2,1,2);
+    set(h.axes(13:14),'Parent',h.figures(8));
+   
     
     
     
@@ -292,30 +295,34 @@ function DrawRawData()
     title(h.axes(5),'Altitude above MSL [m]');
 
     % ************************************************************************
-    %  PLOT WINDOW 3: ATTITUDE ESTIMATE, ACTUATORS/CONTROLS, AIRSPEEDS,...
+    %  PLOT WINDOW 3: ATTITUDE ESTIMATE, AIRSPEEDS,...
     % ************************************************************************
     figure(h.figures(4));
     %Attitude Estimate
     plot(h.axes(6),time(imintime:imaxtime), [sysvector.ATT_Roll(imintime:imaxtime), sysvector.ATT_Pitch(imintime:imaxtime), sysvector.ATT_Yaw(imintime:imaxtime)] .*180./3.14159);
     title(h.axes(6),'Estimated attitude [deg]');
     legend(h.axes(6),'roll','pitch','yaw');
-    %Actuator Controls //Modified with actuator control group 0 (7channels)
-    plot(h.axes(7),time(imintime:imaxtime), [sysvector.ATTC_Ch0(imintime:imaxtime), sysvector.ATTC_Ch1(imintime:imaxtime), sysvector.ATTC_Ch2(imintime:imaxtime), sysvector.ATTC_Ch3(imintime:imaxtime), sysvector.ATTC_Ch4(imintime:imaxtime), sysvector.ATTC_Ch5(imintime:imaxtime),sysvector.ATTC_Ch6(imintime:imaxtime),sysvector.ATTC_Ch7(imintime:imaxtime)]);
-    title(h.axes(7),'Actuator control group 0 [-]');
-    legend(h.axes(7),'Ch0 [-1..+1]','Ch1 [-1..+1]','Ch2 [-1..+1]','Ch3 [-1..+1]', 'Ch4 [-1..+1]','Ch5 [-1..+1]','Ch6 [-1..+1]','Ch7 [-1..+1]');
-    %Actuator Controls
-    plot(h.axes(8),time(imintime:imaxtime), [sysvector.OUT0_Out0(imintime:imaxtime), sysvector.OUT0_Out1(imintime:imaxtime), sysvector.OUT0_Out2(imintime:imaxtime), sysvector.OUT0_Out3(imintime:imaxtime), sysvector.OUT0_Out4(imintime:imaxtime), sysvector.OUT0_Out5(imintime:imaxtime), sysvector.OUT0_Out6(imintime:imaxtime), sysvector.OUT0_Out7(imintime:imaxtime)]);
-    title(h.axes(8),'Actuator Output Group 0 PWM[µs]');
-    legend(h.axes(8),'CH1','CH2','CH3','CH4','CH5','CH6','CH7','CH8');
-    set(h.axes(8), 'YLim',[800 2200]);
+%     %Actuator Controls //Modified with actuator control group 0 (7channels)
+%     plot(h.axes(7),time(imintime:imaxtime), [sysvector.ATTC_Ch0(imintime:imaxtime), sysvector.ATTC_Ch1(imintime:imaxtime), sysvector.ATTC_Ch2(imintime:imaxtime), sysvector.ATTC_Ch3(imintime:imaxtime), sysvector.ATTC_Ch4(imintime:imaxtime), sysvector.ATTC_Ch5(imintime:imaxtime),sysvector.ATTC_Ch6(imintime:imaxtime),sysvector.ATTC_Ch7(imintime:imaxtime)]);
+%     title(h.axes(7),'Actuator control group 0 [-]');
+%     legend(h.axes(7),'Ch0 [-1..+1]','Ch1 [-1..+1]','Ch2 [-1..+1]','Ch3 [-1..+1]', 'Ch4 [-1..+1]','Ch5 [-1..+1]','Ch6 [-1..+1]','Ch7 [-1..+1]');
+%     %Actuator Controls
+%     plot(h.axes(8),time(imintime:imaxtime), [sysvector.OUT0_Out0(imintime:imaxtime), sysvector.OUT0_Out1(imintime:imaxtime), sysvector.OUT0_Out2(imintime:imaxtime), sysvector.OUT0_Out3(imintime:imaxtime), sysvector.OUT0_Out4(imintime:imaxtime), sysvector.OUT0_Out5(imintime:imaxtime), sysvector.OUT0_Out6(imintime:imaxtime), sysvector.OUT0_Out7(imintime:imaxtime)]);
+%     title(h.axes(8),'Actuator Output Group 0 PWM[µs]');
+%     legend(h.axes(8),'CH1','CH2','CH3','CH4','CH5','CH6','CH7','CH8');
+%     set(h.axes(8), 'YLim',[800 2200]);
+    
+    
     %Airspeeds
-    plot(h.axes(9),time(imintime:imaxtime), sysvector.AIRS_IndSpeed(imintime:imaxtime));
+    plot(h.axes(7),time(imintime:imaxtime), sysvector.AIRS_IndSpeed(imintime:imaxtime));
     hold on
-    plot(h.axes(9),time(imintime:imaxtime), sysvector.AIRS_TrueSpeed(imintime:imaxtime));
+    plot(h.axes(7),time(imintime:imaxtime), sysvector.AIRS_TrueSpeed(imintime:imaxtime));
     hold off
     %add GPS total airspeed here
-    title(h.axes(9),'Airspeed [m/s]');
-    legend(h.axes(9),'Indicated Airspeed (IAS)','True Airspeed (TAS)','GPS Airspeed');
+    title(h.axes(7),'Airspeed [m/s]');
+    legend(h.axes(7),'Indicated Airspeed (IAS)','True Airspeed (TAS)','GPS Airspeed');
+    
+    
     
     % ************************************************************************
     %  PLOT WINDOW 4: log stastics
@@ -331,29 +338,57 @@ function DrawRawData()
 %     t2=imaxtime
 %  
 %     t3=size(intervals)
-%     t4=size(time(imintime:imaxtime)) 
-     
-    plot(h.axes(10), time(imintime:imaxtime), intervals(imintime:imaxtime));
+%     t4=size(time(imintime:imaxtime))     
+    plot(h.axes(8), time(imintime:imaxtime), intervals(imintime:imaxtime));
 
-    % ************************************************************************
-    %  PLOT WINDOW 5: Actuator control group 1, manual input and actuator output group 1
-    % ************************************************************************
     
+    
+    
+    % ************************************************************************
+    %  PLOT WINDOW 5: Actuator control group 0 & 1
+    % ************************************************************************    
     figure(h.figures(6));
-    %Actuator control group 1
-    plot(h.axes(11),time(imintime:imaxtime), [sysvector.ACT1_Ch0(imintime:imaxtime), sysvector.ACT1_Ch1(imintime:imaxtime),sysvector.ACT1_Ch2(imintime:imaxtime),sysvector.ACT1_Ch3(imintime:imaxtime),sysvector.ACT1_Ch4(imintime:imaxtime),sysvector.ACT1_Ch5(imintime:imaxtime),sysvector.ACT1_Ch6(imintime:imaxtime),sysvector.ACT1_Ch7(imintime:imaxtime)]);
-    title(h.axes(11),'Actuator control group 1');
-    legend(h.axes(11),'Ch0','Ch1','Ch2','Ch3','Ch4','Ch5','Ch6','Ch7');
+    %Actuator control group 0 (7channels)
+    plot(h.axes(9),time(imintime:imaxtime), [sysvector.ATTC_Ch0(imintime:imaxtime), sysvector.ATTC_Ch1(imintime:imaxtime), sysvector.ATTC_Ch2(imintime:imaxtime), sysvector.ATTC_Ch3(imintime:imaxtime), sysvector.ATTC_Ch4(imintime:imaxtime), sysvector.ATTC_Ch5(imintime:imaxtime),sysvector.ATTC_Ch6(imintime:imaxtime),sysvector.ATTC_Ch7(imintime:imaxtime)]);
+    title(h.axes(9),'Actuator control group 0 [-]');
+    legend(h.axes(9),'Ch0 [-1..+1]','Ch1 [-1..+1]','Ch2 [-1..+1]','Ch3 [-1..+1]', 'Ch4 [-1..+1]','Ch5 [-1..+1]','Ch6 [-1..+1]','Ch7 [-1..+1]');
     
-    %Manual input: x,y,z,r,aux1,aux2,aux3
-    plot(h.axes(12),time(imintime:imaxtime), [sysvector.MAN_x(imintime:imaxtime), sysvector.MAN_y(imintime:imaxtime),sysvector.MAN_z(imintime:imaxtime),sysvector.MAN_r(imintime:imaxtime),sysvector.MAN_aux1(imintime:imaxtime),sysvector.MAN_aux2(imintime:imaxtime),sysvector.MAN_aux3(imintime:imaxtime)]);
-    title(h.axes(12),'Manual input from transmitter');
-    legend(h.axes(12),'x','y','z','r','aux1','aux2','aux3');
+    %Actuator control group 1
+    plot(h.axes(10),time(imintime:imaxtime), [sysvector.ACT1_Ch0(imintime:imaxtime), sysvector.ACT1_Ch1(imintime:imaxtime),sysvector.ACT1_Ch2(imintime:imaxtime),sysvector.ACT1_Ch3(imintime:imaxtime),sysvector.ACT1_Ch4(imintime:imaxtime),sysvector.ACT1_Ch5(imintime:imaxtime),sysvector.ACT1_Ch6(imintime:imaxtime),sysvector.ACT1_Ch7(imintime:imaxtime)]);
+    title(h.axes(10),'Actuator control group 1');
+    legend(h.axes(10),'Ch0 [-1..+1]','Ch1 [-1..+1]','Ch2 [-1..+1]','Ch3 [-1..+1]', 'Ch4 [-1..+1]','Ch5 [-1..+1]','Ch6 [-1..+1]','Ch7 [-1..+1]');
+    
+    
+    
+    % ************************************************************************
+    %  PLOT WINDOW 6: Actuator output group 0 & 1
+    % ************************************************************************
+    figure(h.figures(7));    
+    %Actuator Controls
+    plot(h.axes(11),time(imintime:imaxtime), [sysvector.OUT0_Out0(imintime:imaxtime), sysvector.OUT0_Out1(imintime:imaxtime), sysvector.OUT0_Out2(imintime:imaxtime), sysvector.OUT0_Out3(imintime:imaxtime), sysvector.OUT0_Out4(imintime:imaxtime), sysvector.OUT0_Out5(imintime:imaxtime), sysvector.OUT0_Out6(imintime:imaxtime), sysvector.OUT0_Out7(imintime:imaxtime)]);
+    title(h.axes(11),'Actuator Output Group 0 PWM[µs]');
+    legend(h.axes(11),'CH1','CH2','CH3','CH4','CH5','CH6','CH7','CH8');
+    set(h.axes(11), 'YLim',[800 2200]);
     
     %Actuator output group 1
-    plot(h.axes(13),time(imintime:imaxtime), [sysvector.OUT1_Out0(imintime:imaxtime), sysvector.OUT1_Out1(imintime:imaxtime),sysvector.OUT1_Out2(imintime:imaxtime),sysvector.OUT1_Out3(imintime:imaxtime),sysvector.OUT1_Out4(imintime:imaxtime),sysvector.OUT1_Out5(imintime:imaxtime),sysvector.OUT1_Out6(imintime:imaxtime),sysvector.OUT1_Out7(imintime:imaxtime)]);
-    title(h.axes(13),'Actuator output group 1 (PWM value)');
-    legend(h.axes(13),'Ch0','Ch1','Ch2','Ch3','Ch4','Ch5','Ch6','Ch7');
+    plot(h.axes(12),time(imintime:imaxtime), [sysvector.OUT1_Out0(imintime:imaxtime), sysvector.OUT1_Out1(imintime:imaxtime),sysvector.OUT1_Out2(imintime:imaxtime),sysvector.OUT1_Out3(imintime:imaxtime),sysvector.OUT1_Out4(imintime:imaxtime),sysvector.OUT1_Out5(imintime:imaxtime),sysvector.OUT1_Out6(imintime:imaxtime),sysvector.OUT1_Out7(imintime:imaxtime)]);
+    title(h.axes(12),'Actuator output group 1 (PWM value)');
+    legend(h.axes(12),'Ch0','Ch1','Ch2','Ch3','Ch4','Ch5','Ch6','Ch7');
+     set(h.axes(12), 'YLim',[800 2200]);
+    
+    % ************************************************************************
+    %  PLOT WINDOW 7: Manual input and current fly mode
+    % ************************************************************************
+    figure(h.figures(8)); 
+    
+    %Manual input: x,y,z,r,aux1,aux2,aux3
+    plot(h.axes(13),time(imintime:imaxtime), [sysvector.MAN_x(imintime:imaxtime), sysvector.MAN_y(imintime:imaxtime),sysvector.MAN_z(imintime:imaxtime),sysvector.MAN_r(imintime:imaxtime),sysvector.MAN_aux1(imintime:imaxtime),sysvector.MAN_aux2(imintime:imaxtime),sysvector.MAN_aux3(imintime:imaxtime)]);
+    title(h.axes(13),'Manual input from transmitter');
+    legend(h.axes(13),'x','y','z','r','aux1','aux2','aux3');    
+    
+    %Current fly mode: 0:mc, 1:fw
+    plot(h.axes(14),time(imintime:imaxtime),sysvector.FLYM_mode(imintime:imaxtime));
+    title(h.axes(14),'Fly mode, 0: VTOL, 1: fixed-wing');
     
     
     %Set same timescale for all plots
@@ -461,6 +496,10 @@ function DrawCurrentAircraftState()
     acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch7(i)),','];
     %end
     acstate{12,:}=[acstate{12,:},']'];
+    
+    acstate{13,:}=sprintf('%s \t[','Current fly mode [-]: ');
+    acstate{13,:}=[acstate{13,:},num2str(sysvector.FLYM_mode(i)),','];
+    acstate{13,:}=[acstate{13,:},']'];
     
     
     set(h.edits.AircraftState,'String',acstate);
