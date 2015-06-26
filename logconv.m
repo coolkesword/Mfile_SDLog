@@ -305,7 +305,7 @@ function DrawRawData()
     legend(h.axes(7),'Ch0 [-1..+1]','Ch1 [-1..+1]','Ch2 [-1..+1]','Ch3 [-1..+1]', 'Ch4 [-1..+1]','Ch5 [-1..+1]','Ch6 [-1..+1]','Ch7 [-1..+1]');
     %Actuator Controls
     plot(h.axes(8),time(imintime:imaxtime), [sysvector.OUT0_Out0(imintime:imaxtime), sysvector.OUT0_Out1(imintime:imaxtime), sysvector.OUT0_Out2(imintime:imaxtime), sysvector.OUT0_Out3(imintime:imaxtime), sysvector.OUT0_Out4(imintime:imaxtime), sysvector.OUT0_Out5(imintime:imaxtime), sysvector.OUT0_Out6(imintime:imaxtime), sysvector.OUT0_Out7(imintime:imaxtime)]);
-    title(h.axes(8),'Actuator PWM (raw-)outputs [탎]');
+    title(h.axes(8),'Actuator Output Group 0 PWM[탎]');
     legend(h.axes(8),'CH1','CH2','CH3','CH4','CH5','CH6','CH7','CH8');
     set(h.axes(8), 'YLim',[800 2200]);
     %Airspeeds
@@ -390,6 +390,7 @@ function DrawCurrentAircraftState()
     acstate{6,:}=[sprintf('%s \t','Est. attitude[deg]:'),'[Roll=',num2str(sysvector.ATT_Roll(i).*180./3.14159),...
                                ', Pitch=',num2str(sysvector.ATT_Pitch(i).*180./3.14159),...
                                ', Yaw=',num2str(sysvector.ATT_Yaw(i).*180./3.14159),']'];
+                           
     acstate{7,:}=sprintf('%s \t[','Actuator control group 0 [-]:');
     %for j=1:8
     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch0(i)),','];
@@ -400,12 +401,10 @@ function DrawCurrentAircraftState()
     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch5(i)),','];
     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch6(i)),','];
     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Ch7(i)),','];
-%     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Pitch(i)),','];
-%     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Yaw(i)),','];
-%     acstate{7,:}=[acstate{7,:},num2str(sysvector.ATTC_Thrust(i)),','];
     %end
     acstate{7,:}=[acstate{7,:},']'];
-    acstate{8,:}=sprintf('%s \t[','Actuator Outputs [PWM/탎]:');
+    
+    acstate{8,:}=sprintf('%s \t[','Actuator Output Group 0  [PWM/탎]:');
     %for j=1:8
     acstate{8,:}=[acstate{8,:},num2str(sysvector.OUT0_Out0(i)),','];
     acstate{8,:}=[acstate{8,:},num2str(sysvector.OUT0_Out1(i)),','];
@@ -417,7 +416,52 @@ function DrawCurrentAircraftState()
     acstate{8,:}=[acstate{8,:},num2str(sysvector.OUT0_Out7(i)),','];
     %end
     acstate{8,:}=[acstate{8,:},']'];
+    
+    
     acstate{9,:}=[sprintf('%s \t','Airspeed[m/s]:'),'[IAS: ',num2str(sysvector.AIRS_IndSpeed(i)),', TAS: ',num2str(sysvector.AIRS_TrueSpeed(i)),']'];
+    
+    %---------------------------------------------------------------------------------------------------------------------------------------------
+    % Add new data topic display here
+    % Actuator Output Group 1
+    acstate{10,:}=sprintf('%s \t[','Actuator Output Group 1  [PWM/탎]:');
+    %for j=1:8
+    acstate{10,:}=[acstate{10,:},num2str(sysvector.OUT1_Out0(i)),','];
+    acstate{10,:}=[acstate{10,:},num2str(sysvector.OUT1_Out1(i)),','];
+    acstate{10,:}=[acstate{10,:},num2str(sysvector.OUT1_Out2(i)),','];
+    acstate{10,:}=[acstate{10,:},num2str(sysvector.OUT1_Out3(i)),','];
+    acstate{10,:}=[acstate{10,:},num2str(sysvector.OUT1_Out4(i)),','];
+    acstate{10,:}=[acstate{10,:},num2str(sysvector.OUT1_Out5(i)),','];
+    acstate{10,:}=[acstate{10,:},num2str(sysvector.OUT1_Out6(i)),','];
+    acstate{10,:}=[acstate{10,:},num2str(sysvector.OUT1_Out7(i)),','];
+    %end
+    acstate{10,:}=[acstate{10,:},']'];
+    
+    % Manual input from transmmiter
+    acstate{11,:}=sprintf('%s \t[','Manual input (x,y,z,r,aux1,aux2,aux3) :');
+    %for j=1:8
+    acstate{11,:}=[acstate{11,:},num2str(sysvector.MAN_x(i)),','];
+    acstate{11,:}=[acstate{11,:},num2str(sysvector.MAN_y(i)),','];
+    acstate{11,:}=[acstate{11,:},num2str(sysvector.MAN_z(i)),','];
+    acstate{11,:}=[acstate{11,:},num2str(sysvector.MAN_r(i)),','];
+    acstate{11,:}=[acstate{11,:},num2str(sysvector.MAN_aux1(i)),','];
+    acstate{11,:}=[acstate{11,:},num2str(sysvector.MAN_aux2(i)),','];
+    acstate{11,:}=[acstate{11,:},num2str(sysvector.MAN_aux3(i)),','];
+    %end
+    acstate{11,:}=[acstate{11,:},']'];
+    
+    acstate{12,:}=sprintf('%s \t[','Actuator control group 1 [-]: ');
+    %for j=1:8
+    acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch0(i)),','];
+    acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch1(i)),','];
+    acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch2(i)),','];
+    acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch3(i)),','];
+    acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch4(i)),','];
+    acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch5(i)),','];
+    acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch6(i)),','];
+    acstate{12,:}=[acstate{12,:},num2str(sysvector.ACT1_Ch7(i)),','];
+    %end
+    acstate{12,:}=[acstate{12,:},']'];
+    
     
     set(h.edits.AircraftState,'String',acstate);
     
